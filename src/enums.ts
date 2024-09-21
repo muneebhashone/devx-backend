@@ -10,6 +10,14 @@ export const permissionEnums = [
   "UPDATE_PERMISSIONS",
 ] as const;
 
+export const notificationTypeEnums = [
+  "LIKE",
+  "COMMENT",
+  "BOOKMARK",
+  "FOLLOW",
+  "MESSAGE",
+] as const;
+
 export const rolesEnums = [
   "SUPER_ADMIN",
   "SUB_ADMIN",
@@ -24,7 +32,12 @@ export const statusEnums = ["REJECTED", "APPROVED", "REQUESTED"] as const;
 export type RoleType = (typeof rolesEnums)[number];
 export type StatusType = (typeof statusEnums)[number];
 export type PermissionsType = (typeof permissionEnums)[number];
+export type NotificationType = (typeof notificationTypeEnums)[number];
 
 export const StatusGraphQLEnum = builder.enumType("Status", {
   values: statusEnums,
+});
+
+export const NotificationTypeGraphQLEnum = builder.enumType("NotificationType", {
+  values: notificationTypeEnums,
 });
