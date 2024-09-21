@@ -10,15 +10,15 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres_talent_forest:/var/lib/postgresql/data
+      - postgres_devx:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
     ports:
       - 6379:6379
     volumes:
-      - redis_talent_forest:/data
+      - redis_devx:/data
 
 volumes:
-  postgres_talent_forest:
-  redis_talent_forest:
+  postgres_devx:
+  redis_devx:
