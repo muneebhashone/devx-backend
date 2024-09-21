@@ -11,7 +11,7 @@ import {
 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
-import { relations } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
 export const statusPgEnum = pgEnum("USER_STATUS", statusEnums);
@@ -48,7 +48,7 @@ export const users = pgTable("users", {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-  feeds: many(feeds),
+  posts: many(posts),
   comments: many(comments),
   likes: many(likes),
   bookmarks: many(bookmarks),
@@ -62,7 +62,7 @@ export type Media = {
   type: "image" | "video" | "link";
 };
 
-export const feeds = pgTable("feeds", {
+export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   title: varchar("title").notNull(),
@@ -74,9 +74,9 @@ export const feeds = pgTable("feeds", {
     .$onUpdate(() => new Date().toISOString()),
 });
 
-export const feedsRelations = relations(feeds, ({ one, many }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   user: one(users, {
-    fields: [feeds.userId],
+    fields: [posts.userId],
     references: [users.id],
   }),
   comments: many(comments),
@@ -87,7 +87,7 @@ export const feedsRelations = relations(feeds, ({ one, many }) => ({
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
-  feedId: integer("feed_id").references(() => feeds.id),
+  postId: integer("post_id").references(() => posts.id),
   content: varchar("content").notNull(),
   createdAt: date("created_at").defaultNow().notNull(),
   updatedAt: date("updated_at")
@@ -100,9 +100,9 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
     fields: [comments.userId],
     references: [users.id],
   }),
-  feed: one(feeds, {
-    fields: [comments.feedId],
-    references: [feeds.id],
+  post: one(posts, {
+    fields: [comments.postId],
+    references: [posts.id],
   }),
   replies: many(replies),
 }));
@@ -134,11 +134,11 @@ export const likes = pgTable(
   {
     id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id),
-    feedId: integer("feed_id").references(() => feeds.id),
+    postId: integer("post_id").references(() => posts.id),
     createdAt: date("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    unique: unique().on(table.userId, table.feedId),
+    unique: unique().on(table.userId, table.postId),
   })
 );
 
@@ -147,9 +147,9 @@ export const likesRelations = relations(likes, ({ one }) => ({
     fields: [likes.userId],
     references: [users.id],
   }),
-  feed: one(feeds, {
-    fields: [likes.feedId],
-    references: [feeds.id],
+  post: one(posts, {
+    fields: [likes.postId],
+    references: [posts.id],
   }),
 }));
 
@@ -158,11 +158,11 @@ export const bookmarks = pgTable(
   {
     id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id),
-    feedId: integer("feed_id").references(() => feeds.id),
+    postId: integer("post_id").references(() => posts.id),
     createdAt: date("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    unique: unique().on(table.userId, table.feedId),
+    unique: unique().on(table.userId, table.postId),
   })
 );
 
@@ -171,9 +171,9 @@ export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
     fields: [bookmarks.userId],
     references: [users.id],
   }),
-  feed: one(feeds, {
-    fields: [bookmarks.feedId],
-    references: [feeds.id],
+  post: one(posts, {
+    fields: [bookmarks.postId],
+    references: [posts.id],
   }),
 }));
 
@@ -230,3 +230,14 @@ export const reelsRelations = relations(reels, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export const userFeed = pgTable("user_feed", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  posts: json("posts").$type<InferSelectModel<typeof posts>[]>(),
+  createdAt: date("created_at").defaultNow().notNull(),
+  updatedAt: date("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date().toISOString()),
+  expiresAt: date("expires_at").notNull(),
+});
