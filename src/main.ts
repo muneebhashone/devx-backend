@@ -1,12 +1,13 @@
 import app from "./core/app";
 import config from "./core/config";
-import { mongodbConnection as connectMongoDb } from "./lib/mongodb";
 import { pingRedis } from "./lib/redis";
+import registerRoutes from "./routes/registerRoutes";
 
 const start = async () => {
   try {
-    await connectMongoDb();
     await pingRedis();
+
+    registerRoutes(app);
 
     await app.listen({ port: config.PORT });
 
