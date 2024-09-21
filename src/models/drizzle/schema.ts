@@ -54,6 +54,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   bookmarks: many(bookmarks),
   follows: many(follows),
   notifications: many(notifications),
+  reels: many(reels),
 }));
 
 export type Media = {
@@ -211,6 +212,21 @@ export const notifications = pgTable("notifications", {
 export const notificationsRelations = relations(notifications, ({ one }) => ({
   user: one(users, {
     fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));
+
+export const reels = pgTable("reels", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  video: varchar("video").notNull(),
+  caption: varchar("caption"),
+  createdAt: date("created_at").defaultNow().notNull(),
+});
+
+export const reelsRelations = relations(reels, ({ one }) => ({
+  user: one(users, {
+    fields: [reels.userId],
     references: [users.id],
   }),
 }));
