@@ -1,34 +1,30 @@
-import { InferSelectModel } from "drizzle-orm";
 import { builder } from "../builder";
-import { Category, ICategory } from "./category";
+import { Category } from "./category";
 import { StatusGraphQLEnum } from "./enums";
-import { IUser, User } from "./user";
-import { posts } from "../models/drizzle/schema";
-
-export interface IPost extends InferSelectModel<typeof posts> {
-  user: IUser;
-  categories: ICategory[];
-}
+import { User } from "./user";
+import { IPost } from "../types";
 
 export const Post = builder.objectRef<IPost>("Post").implement({
   fields: (t) => ({
     id: t.exposeInt("id"),
     title: t.exposeString("title"),
-    description: t.exposeString("description"),
+    description: t.exposeString("description", { nullable: true }),
     content: t.exposeString("content"),
-    createdAt: t.exposeString("createdAt"),
-    updatedAt: t.exposeString("updatedAt"),
+    createdAt: t.field({
+      type: "DateTime",
+      resolve: (post) => new Date(post.createdAt as string),
+    }),
+    updatedAt: t.field({
+      type: "DateTime",
+      resolve: (post) => post.updatedAt ? new Date(post.updatedAt) : null,
+    }),
     categories: t.field({
-      type: t.listRef(Category),
-      resolve: async (parent) => {
-        return parent.categories;
-      },
+      type: [Category],
+      resolve: (post) => post.categories,
     }),
     user: t.field({
       type: User,
-      resolve: async (parent) => {
-        return parent.user;
-      },
+      resolve: (post) => post.user,
     }),
   }),
 });
