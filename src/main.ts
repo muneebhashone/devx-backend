@@ -1,7 +1,7 @@
 import app from "./core/app";
 import config from "./core/config";
 import { pingRedis } from "./lib/redis";
-import registerRoutes from "./routes/registerRoutes";
+import registerRoutes from "./routes";
 
 const start = async () => {
   try {
