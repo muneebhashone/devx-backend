@@ -94,7 +94,7 @@ export const comments = pgTable("comments", {
     .$onUpdate(() => new Date().toISOString()),
 });
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const commentsRelations = relations(comments, ({ one, many }) => ({
   user: one(users, {
     fields: [comments.userId],
     references: [users.id],
@@ -103,6 +103,7 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.feedId],
     references: [feeds.id],
   }),
+  replies: many(replies),
 }));
 
 export const replies = pgTable("replies", {
