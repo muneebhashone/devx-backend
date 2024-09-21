@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 const configSchema = z.object({
-  MONGO_DATABASE_URL: z.string().url(),
   POSTGRES_DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
   PORT: z.string().default("3000").transform(Number),
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
 });
 
 const jwtConfigSchema = z.object({
