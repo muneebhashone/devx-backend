@@ -1,7 +1,7 @@
 import { desc, eq, sql } from "drizzle-orm";
-import { db } from "../lib/drizzle";
-import { posts, users, categories, categoriesPosts } from "../models/drizzle/schema";
+import { db } from "../../lib/drizzle";
 import { IPost, IFeedConnection } from "../types";
+import { posts, users } from "../../models/drizzle/schema";
 
 export const fetchFeedItems = async (cursor: number | null, limit: number = 20): Promise<IFeedConnection> => {
   const query = db

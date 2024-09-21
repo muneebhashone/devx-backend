@@ -1,8 +1,8 @@
 import { eq, InferInsertModel } from "drizzle-orm";
-import { db } from "../lib/drizzle";
-import { users } from "../models/drizzle/schema";
-import { IUser } from "../schema";
-import { hashPassword } from "../utils/security";
+import { db } from "../../lib/drizzle";
+import { users } from "../../models/drizzle/schema";
+import { IUser } from "./user.schema";
+import { hashPassword } from "../../utils/security";
 
 export const createUser = async (payload: InferInsertModel<typeof users>): Promise<IUser> => {
   const userExist = await db.query.users.findFirst({
