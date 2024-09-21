@@ -59,6 +59,8 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     fields: [users.id],
     references: [userFeed.userId],
   }),
+  group: many(groupMembers),
+  events: many(eventMembers),
 }));
 
 export type Media = {
@@ -72,20 +74,57 @@ export const posts = pgTable("posts", {
   title: varchar("title").notNull(),
   content: varchar("content").notNull(),
   media: json("media").$type<Media[]>(),
+  groupId: integer("group_id").references(() => groups.id),
   createdAt: date("created_at").defaultNow().notNull(),
   updatedAt: date("updated_at")
     .defaultNow()
     .$onUpdate(() => new Date().toISOString()),
 });
 
+export const postShareTypePgEnum = pgEnum("POST_SHARE_TYPE", ["group", "user", "all"]);
+
+export const postShares = pgTable("post_shares", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => posts.id),
+  sharedToTypes: postShareTypePgEnum("shared_to_type"),
+  sharedById: integer("shared_by_id").references(() => users.id),
+  sharedToGroupId: integer("shared_to_group_id").references(() => groups.id),
+  sharedToUserId: integer("shared_to_user_id").references(() => users.id),
+  createdAt: date("created_at").defaultNow().notNull(),
+});
+
+export const postSharesRelations = relations(postShares, ({ one }) => ({  
+  post: one(posts, {
+    fields: [postShares.postId],
+    references: [posts.id],
+  }),
+  sharedBy: one(users, {
+    fields: [postShares.sharedById],
+    references: [users.id],
+  }),
+  sharedToGroup: one(groups, {
+    fields: [postShares.sharedToGroupId],
+    references: [groups.id],
+  }),
+  sharedToUser: one(users, {
+    fields: [postShares.sharedToUserId],
+    references: [users.id],
+  }),
+}));
+
 export const postsRelations = relations(posts, ({ one, many }) => ({
   user: one(users, {
     fields: [posts.userId],
     references: [users.id],
   }),
+  group: one(groups, {
+    fields: [posts.groupId],
+    references: [groups.id],
+  }),
   comments: many(comments),
   likes: many(likes),
   bookmarks: many(bookmarks),
+  postShares: many(postShares),
 }));
 
 export const comments = pgTable("comments", {
@@ -245,3 +284,101 @@ export const userFeed = pgTable("user_feed", {
     .$onUpdate(() => new Date().toISOString()),
   expiresAt: date("expires_at").notNull(),
 });
+
+export const userFeedRelations = relations(userFeed, ({ one }) => ({
+  user: one(users, {
+    fields: [userFeed.userId],
+    references: [users.id],
+  }),
+}));
+
+export const groups = pgTable("groups", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: varchar("description"),
+  isPublic: boolean("is_public").default(false),
+  cover: varchar("cover"),
+  avatar: varchar("avatar"),
+  createdAt: date("created_at").defaultNow().notNull(),
+  updatedAt: date("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date().toISOString()),
+});
+
+export const groupMembers = pgTable("group_members", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").references(() => groups.id),
+  userId: integer("user_id").references(() => users.id),
+  createdAt: date("created_at").defaultNow().notNull(),
+});
+
+export const groupMembersRelations = relations(groupMembers, ({ one }) => ({
+  group: one(groups, {
+    fields: [groupMembers.groupId],
+    references: [groups.id],
+  }),
+  user: one(users, {
+    fields: [groupMembers.userId],
+    references: [users.id],
+  }),
+}));
+
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").references(() => groups.id),
+  title: varchar("title").notNull(),
+  description: varchar("description"),
+  location: varchar("location"),
+  startAt: date("start_at").notNull(),
+  endAt: date("end_at").notNull(),
+  createdAt: date("created_at").defaultNow().notNull(),
+  updatedAt: date("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date().toISOString()),
+});
+
+export const eventsRelations = relations(events, ({ one }) => ({
+  group: one(groups, {
+    fields: [events.groupId],
+    references: [groups.id],
+  }),
+}));
+
+export const eventMembers = pgTable("event_members", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").references(() => events.id),
+  userId: integer("user_id").references(() => users.id),
+  createdAt: date("created_at").defaultNow().notNull(),
+});
+
+export const eventMembersRelations = relations(eventMembers, ({ one }) => ({
+  event: one(events, {
+    fields: [eventMembers.eventId],
+    references: [events.id],
+  }),
+  user: one(users, {
+    fields: [eventMembers.userId],
+    references: [users.id],
+  }),
+}));
+
+export const groupPosts = pgTable("group_posts", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").references(() => groups.id),
+  postId: integer("post_id").references(() => posts.id),
+  createdAt: date("created_at").defaultNow().notNull(),
+});
+
+export const groupPostsRelations = relations(groupPosts, ({ one }) => ({
+  group: one(groups, {
+    fields: [groupPosts.groupId],
+    references: [groups.id],
+  }),
+  post: one(posts, {
+    fields: [groupPosts.postId],
+    references: [posts.id],
+  }),
+}));  
+
+
+
