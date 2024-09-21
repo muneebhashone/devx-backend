@@ -1,9 +1,9 @@
 import axios from "axios";
-import { ILoginUserInput, ILoginUserReturn } from "../schema";
-import { signJwt, verifyPassword } from "../utils/security";
-import { createUser, findUserByEmail, findUserByUsername } from "./user";
+import { ILoginUserInput, ILoginUserReturn } from "./auth.schema";
+import { signJwt, verifyPassword } from "../../utils/security";
+import { createUser, findUserByEmail, findUserByUsername } from "../user/user.service";
 import crypto from "crypto";
-import config from "../core/config";
+import config from "../../core/config";
 
 interface GithubTokenResponse {
   access_token: string;

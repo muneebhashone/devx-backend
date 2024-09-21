@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import config from "../core/config";
-import { handleGithubRedirect } from "../services/auth";
+import config from "../../core/config";
+import { handleGithubRedirect } from "./auth.service";
 
 const GITHUB_CLIENT_ID = config.GITHUB_CLIENT_ID;
 
