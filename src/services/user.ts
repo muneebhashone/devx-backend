@@ -1,12 +1,12 @@
-import { eq } from "drizzle-orm";
+import { eq, InferInsertModel } from "drizzle-orm";
 import { db } from "../lib/drizzle";
 import { users } from "../models/drizzle/schema";
+import { IUser } from "../schema";
 import { hashPassword } from "../utils/security";
-import { ICreateUserInput, IUser } from "../schema";
 
-export const createUser = async (payload: ICreateUserInput): Promise<IUser> => {
+export const createUser = async (payload: InferInsertModel<typeof users>): Promise<IUser> => {
   const userExist = await db.query.users.findFirst({
-    where: eq(users.email, payload.email),
+    where: eq(users.username, payload.username),
   });
 
   if (userExist) {
@@ -17,7 +17,7 @@ export const createUser = async (payload: ICreateUserInput): Promise<IUser> => {
 
   const user = await db
     .insert(users)
-    .values({ ...payload, password: password, status: "APPROVED" })
+    .values({ ...payload, password: password })
     .returning()
     .execute();
 
@@ -52,4 +52,12 @@ export const findUserByEmail = async (email: string): Promise<IUser> => {
   }
 
   return user;
+};
+
+export const findUserByUsername = async (username: string): Promise<IUser | null> => {
+  const user = await db.query.users.findFirst({
+    where: eq(users.username, username),
+  });
+
+  return user || null;
 };
