@@ -5,7 +5,7 @@ import { pingRedis } from "./lib/redis";
 
 const start = async () => {
   try {
-    await connectMongoDb();
+    // await connectMongoDb();
     await pingRedis();
 
     await app.listen({ port: config.PORT });
