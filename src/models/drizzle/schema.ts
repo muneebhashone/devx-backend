@@ -6,15 +6,19 @@ import {
   pgTable,
   serial,
   unique,
-  varchar
+  varchar,
 } from "drizzle-orm/pg-core";
 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
+import { relations } from "drizzle-orm";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
 export const statusPgEnum = pgEnum("USER_STATUS", statusEnums);
-export const pgNotificationTypeEnum = pgEnum("NOTIFICATION_TYPE", notificationTypeEnums);
+export const pgNotificationTypeEnum = pgEnum(
+  "NOTIFICATION_TYPE",
+  notificationTypeEnums
+);
 
 export type ResetToken = {
   token: string;
@@ -43,6 +47,15 @@ export const users = pgTable("users", {
     .$onUpdate(() => new Date().toISOString()),
 });
 
+export const usersRelations = relations(users, ({ many }) => ({
+  feeds: many(feeds),
+  comments: many(comments),
+  likes: many(likes),
+  bookmarks: many(bookmarks),
+  follows: many(follows),
+  notifications: many(notifications),
+}));
+
 export type Media = {
   url: string;
   type: "image" | "video" | "link";
@@ -60,6 +73,16 @@ export const feeds = pgTable("feeds", {
     .$onUpdate(() => new Date().toISOString()),
 });
 
+export const feedsRelations = relations(feeds, ({ one, many }) => ({
+  user: one(users, {
+    fields: [feeds.userId],
+    references: [users.id],
+  }),
+  comments: many(comments),
+  likes: many(likes),
+  bookmarks: many(bookmarks),
+}));
+
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -71,6 +94,17 @@ export const comments = pgTable("comments", {
     .$onUpdate(() => new Date().toISOString()),
 });
 
+export const commentsRelations = relations(comments, ({ one }) => ({
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
+  feed: one(feeds, {
+    fields: [comments.feedId],
+    references: [feeds.id],
+  }),
+}));
+
 export const replies = pgTable("replies", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -81,6 +115,17 @@ export const replies = pgTable("replies", {
     .defaultNow()
     .$onUpdate(() => new Date().toISOString()),
 });
+
+export const repliesRelations = relations(replies, ({ one }) => ({
+  user: one(users, {
+    fields: [replies.userId],
+    references: [users.id],
+  }),
+  parentComment: one(comments, {
+    fields: [replies.parentCommentId],
+    references: [comments.id],
+  }),
+}));
 
 export const likes = pgTable(
   "likes",
@@ -95,6 +140,17 @@ export const likes = pgTable(
   })
 );
 
+export const likesRelations = relations(likes, ({ one }) => ({
+  user: one(users, {
+    fields: [likes.userId],
+    references: [users.id],
+  }),
+  feed: one(feeds, {
+    fields: [likes.feedId],
+    references: [feeds.id],
+  }),
+}));
+
 export const bookmarks = pgTable(
   "bookmarks",
   {
@@ -107,6 +163,17 @@ export const bookmarks = pgTable(
     unique: unique().on(table.userId, table.feedId),
   })
 );
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+  user: one(users, {
+    fields: [bookmarks.userId],
+    references: [users.id],
+  }),
+  feed: one(feeds, {
+    fields: [bookmarks.feedId],
+    references: [feeds.id],
+  }),
+}));
 
 export const follows = pgTable(
   "follows",
@@ -121,6 +188,17 @@ export const follows = pgTable(
   })
 );
 
+export const followsRelations = relations(follows, ({ one }) => ({
+  user: one(users, {
+    fields: [follows.userId],
+    references: [users.id],
+  }),
+  following: one(users, {
+    fields: [follows.followingId],
+    references: [users.id],
+  }),
+}));
+
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -128,3 +206,10 @@ export const notifications = pgTable("notifications", {
   data: json("data").$type<NotificationDataJsonType>(),
   createdAt: date("created_at").defaultNow().notNull(),
 });
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));
