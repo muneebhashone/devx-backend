@@ -47,7 +47,7 @@ export const users = pgTable("users", {
     .$onUpdate(() => new Date().toISOString()),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   posts: many(posts),
   comments: many(comments),
   likes: many(likes),
@@ -55,6 +55,10 @@ export const usersRelations = relations(users, ({ many }) => ({
   follows: many(follows),
   notifications: many(notifications),
   reels: many(reels),
+  userFeed: one(userFeed, {
+    fields: [users.id],
+    references: [userFeed.userId],
+  }),
 }));
 
 export type Media = {
