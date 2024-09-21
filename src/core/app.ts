@@ -1,7 +1,7 @@
 import Fastify, { FastifyInstance } from "fastify";
 import mercurius from "mercurius";
 import cors from "@fastify/cors";
-import schema from "../graphqlSchema";
+import schema from "../graphqlSchemaBuilder";
 
 const app: FastifyInstance = Fastify({
   logger: {
