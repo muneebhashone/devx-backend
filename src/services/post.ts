@@ -7,7 +7,8 @@ import {
   posts,
   users,
 } from "../models/drizzle/schema";
-import { ICategory, ICreatePostInput, IPost } from "../schema";
+import { IPost, ICreatePostInput } from "../types";
+import { ICategory } from "../schema";
 
 export const createPost = async (payload: ICreatePostInput): Promise<IPost> => {
   const insertedPost = await db
@@ -21,7 +22,7 @@ export const createPost = async (payload: ICreatePostInput): Promise<IPost> => {
   const postId = insertedPost[0].id;
 
   const categoriesPostInsertPromises = payload.categoryId.map(
-    async (categoryId) => {
+    async (categoryId: number) => {
       await db.insert(categoriesPosts).values({
         categoryId: categoryId,
         postId: postId,
@@ -34,9 +35,7 @@ export const createPost = async (payload: ICreatePostInput): Promise<IPost> => {
   const post = await db
     .select({
       ...getTableColumns(posts),
-      categories: sql<
-        ICategory[]
-      >`json_agg(json_build_object('name', ${categories.name}, 'id', ${categories.id}, 'updatedAt', ${categories.updatedAt}, 'createdAt', ${categories.createdAt}, 'description', ${categories.description}))`,
+      categories: sql<ICategory[]>`json_agg(json_build_object('name', ${categories.name}, 'id', ${categories.id}, 'updatedAt', ${categories.updatedAt}, 'createdAt', ${categories.createdAt}, 'description', ${categories.description}))`,
       user: users,
     })
     .from(posts)
@@ -68,4 +67,24 @@ export const fetchPosts = async (): Promise<IPost[]> => {
     .offset(0);
 
   return postsFetched as IPost[];
+};
+
+export const fetchPostById = async (postId: number): Promise<IPost | null> => {
+  const post = await db
+    .select({
+      ...getTableColumns(posts),
+      categories: sql<
+        ICategory[]
+      >`json_agg(json_build_object('name', ${categories.name}, 'id', ${categories.id}, 'updatedAt', ${categories.updatedAt}, 'createdAt', ${categories.createdAt}, 'description', ${categories.description}))`,
+      user: users,
+    })
+    .from(posts)
+    .leftJoin(users, eq(users.id, posts.userId))
+    .leftJoin(categoriesPosts, eq(posts.id, categoriesPosts.postId))
+    .leftJoin(categories, eq(categoriesPosts.categoryId, categories.id))
+    .groupBy(posts.id, users.id, users.username)
+    .where(eq(posts.id, postId))
+    .limit(1);
+
+  return post[0] as IPost || null;
 };
