@@ -1,5 +1,4 @@
-import "./modules/auth/auth.schema";
-import "./modules/user/user.schema";
+import "./schemas";
 import "./resolvers";
 
 import { builder } from "./builder";
