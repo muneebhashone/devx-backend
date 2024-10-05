@@ -12,6 +12,7 @@ import {
 import { pgEnum } from "drizzle-orm/pg-core";
 import { notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
 import { InferSelectModel, relations } from "drizzle-orm";
+import { IMedia } from "../../types";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
 export const statusPgEnum = pgEnum("USER_STATUS", statusEnums);
@@ -63,17 +64,12 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   events: many(eventMembers),
 }));
 
-export type Media = {
-  url: string;
-  type: "image" | "video" | "link";
-};
-
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   title: varchar("title").notNull(),
   content: varchar("content").notNull(),
-  media: json("media").$type<Media[]>(),
+  media: json("media").$type<IMedia[]>(),
   groupId: integer("group_id").references(() => groups.id),
   createdAt: date("created_at").defaultNow().notNull(),
   updatedAt: date("updated_at")
