@@ -1,17 +1,18 @@
 import { builder } from "../../builder";
 import { wrapResolver } from "../../utils/graphqlUtil";
-import { CreateLikeInput, Like } from "./like.schema";
+import { CreateLikeInput } from "./like.schema";
 import { createLike, deleteLike } from "./like.service";
 
 builder.mutationField("createLike", (t) =>
-  t.field({
-    type: Like,
+  t.boolean({
     args: {
       input: t.arg({ type: CreateLikeInput, required: true }),
     },
-    
-    resolve: wrapResolver(async (_, { input }) => {
-      const like = await createLike(input);
+    authScopes: {
+      protected: true,
+    },
+    resolve: wrapResolver(async (_, { input }, { currentUser }) => {
+      const like = await createLike(input, currentUser.id);
       return like;
     }),
   })
@@ -20,11 +21,13 @@ builder.mutationField("createLike", (t) =>
 builder.mutationField("deleteLike", (t) =>
   t.boolean({
     args: {
-      userId: t.arg.int({ required: true }),
       postId: t.arg.int({ required: true }),
     },
-    resolve: wrapResolver(async (_, { userId, postId }) => {
-      return deleteLike(userId, postId);
+    authScopes: {
+      protected: true,
+    },
+    resolve: wrapResolver(async (_, { postId }, { currentUser }) => {
+      return deleteLike(currentUser.id, postId);
     }),
   })
 );
