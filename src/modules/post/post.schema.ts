@@ -1,18 +1,10 @@
+import { InferSelectModel } from "drizzle-orm";
 import { builder } from "../../builder";
 import { posts } from "../../models/drizzle/schema";
-import { InferSelectModel } from "drizzle-orm";
 import { IMedia } from "../../types";
-import { MediaTypeGraphQLEnum } from "../../enums";
+import { Media, MediaInput } from "../common/common.schema";
 
 export interface IPost extends InferSelectModel<typeof posts> {}
-
-// New IMedia type for Pothos
-const MediaType = builder.objectRef<IMedia>("IMedia").implement({
-  fields: (t) => ({
-    url: t.exposeString("url"),
-    type: t.exposeString("type"),
-  }),
-});
 
 export const Post = builder.objectRef<IPost>("Post").implement({
   fields: (t) => ({
@@ -21,20 +13,12 @@ export const Post = builder.objectRef<IPost>("Post").implement({
     title: t.exposeString("title"),
     content: t.exposeString("content"),
     media: t.field({
-      type: [MediaType],
+      type: [Media],
       resolve: (post) => post.media as IMedia[],
     }),
     groupId: t.exposeInt("groupId", { nullable: true }),
     createdAt: t.exposeString("createdAt"),
     updatedAt: t.exposeString("updatedAt"),
-  }),
-});
-
-// Update MediaInput to match IMedia type
-const MediaInput = builder.inputType("MediaInput", {
-  fields: (t) => ({
-    url: t.string({ required: true }),
-    type: t.field({ type: MediaTypeGraphQLEnum, required: true }),
   }),
 });
 

@@ -1,7 +1,7 @@
 import { builder } from "../../builder";
 import { wrapResolver } from "../../utils/graphqlUtil";
 import { Post } from "./post.schema";
-import { fetchPost, fetchPosts, fetchUserPosts } from "./post.service";
+import { fetchPost, fetchUserPosts } from "./post.service";
 
 builder.queryField("post", (t) =>
   t.field({
@@ -15,14 +15,17 @@ builder.queryField("post", (t) =>
   })
 );
 
-builder.queryField("posts", (t) =>
-  t.field({
-    type: [Post],
-    resolve: wrapResolver(async () => {
-      return fetchPosts();
-    }),
-  })
-);
+// builder.queryField("posts", (t) =>
+//   t.field({
+//     type: [Post],
+//     authScopes: {
+//       protected: true,
+//     },
+//     resolve: wrapResolver(async () => {
+//       return fetchPosts();
+//     }),
+//   })
+// );
 
 builder.queryField("userPosts", (t) =>
   t.field({
@@ -30,8 +33,11 @@ builder.queryField("userPosts", (t) =>
     args: {
       userId: t.arg.int({ required: true }),
     },
+    authScopes: {
+      protected: true,
+    },
     resolve: wrapResolver(async (_, { userId }) => {
-      return fetchUserPosts(userId);
-    }),
-  })
-);
+        return fetchUserPosts(userId);
+      }),
+    })
+  );
