@@ -42,6 +42,14 @@ export const fetchUser = async (userId: string): Promise<IUser> => {
   return user;
 };
 
+export const findUserById = async (userId: number): Promise<IUser | null> => {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
+
+  return user || null;
+};
+
 export const findUserByEmail = async (email: string): Promise<IUser> => {
   const user = await db.query.users.findFirst({
     where: eq(users.email, email),

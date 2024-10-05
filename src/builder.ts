@@ -4,8 +4,14 @@ import {
   DateTimeResolver,
   EmailAddressResolver,
 } from "graphql-scalars";
+import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
+import ZodPlugin from "@pothos/plugin-zod";
+import { IUser } from "./modules/user/user.schema";
 
 export const builder = new SchemaBuilder<{
+  AuthScopes: {
+    protected: boolean;
+  };
   Scalars: {
     DateTime: {
       Input: string;
@@ -20,7 +26,22 @@ export const builder = new SchemaBuilder<{
       Output: string;
     };
   };
-}>({});
+  Context: {
+    currentUser: IUser;
+  };
+}>({
+  plugins: [ScopeAuthPlugin, ZodPlugin],
+  scopeAuth: {
+    authScopes: async (context) => ({
+      protected: !!context.currentUser,
+    }),
+  },
+  zod: {
+    validationError: (zodError) => {
+      return zodError;
+    },
+  },
+});
 
 builder.addScalarType("DateTime", DateTimeResolver, {});
 builder.addScalarType("Date", DateResolver, {});

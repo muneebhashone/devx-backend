@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from "fastify";
 import mercurius from "mercurius";
 import cors from "@fastify/cors";
 import schema from "../graphqlSchemaBuilder";
+import { contextHandler } from "./contextHandler";
 
 const app: FastifyInstance = Fastify({
   logger: {
@@ -19,6 +20,7 @@ const app: FastifyInstance = Fastify({
 app.register(mercurius, {
   schema: schema,
   graphiql: true,
+  context: contextHandler,
 });
 
 app.register(cors, {
