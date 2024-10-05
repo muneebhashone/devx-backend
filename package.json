@@ -37,6 +37,7 @@
     "@fastify/cors": "^9.0.1",
     "@pothos/core": "^4.0.2",
     "@pothos/plugin-scope-auth": "^4.0.2",
+    "@pothos/plugin-zod": "^4.1.0",
     "@react-email/components": "0.0.22",
     "argon2": "^0.40.3",
     "axios": "^1.7.7",
