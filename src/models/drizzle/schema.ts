@@ -74,6 +74,7 @@ export const posts = pgTable("posts", {
   title: varchar("title").notNull(),
   content: varchar("content").notNull(),
   media: json("media").$type<Media[]>(),
+  likeCount: integer("like_count").default(0),
   groupId: integer("group_id").references(() => groups.id),
   createdAt: date("created_at").defaultNow().notNull(),
   updatedAt: date("updated_at")
@@ -178,10 +179,11 @@ export const likes = pgTable(
     id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id),
     postId: integer("post_id").references(() => posts.id),
+    commentId: integer("comment_id").references(() => comments.id),
     createdAt: date("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    unique: unique().on(table.userId, table.postId),
+    unique: unique().on(table.userId, table.postId, table.commentId),
   })
 );
 
@@ -193,6 +195,10 @@ export const likesRelations = relations(likes, ({ one }) => ({
   post: one(posts, {
     fields: [likes.postId],
     references: [posts.id],
+  }),
+  comment: one(comments, {
+    fields: [likes.commentId],
+    references: [comments.id],
   }),
 }));
 
