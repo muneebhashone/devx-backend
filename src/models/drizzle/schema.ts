@@ -10,7 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { pgEnum } from "drizzle-orm/pg-core";
-import { notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
+import { MediaType, notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
 import { InferSelectModel, relations } from "drizzle-orm";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
@@ -65,7 +65,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 
 export type Media = {
   url: string;
-  type: "image" | "video" | "link";
+  type: MediaType;
 };
 
 export const posts = pgTable("posts", {
@@ -133,6 +133,7 @@ export const comments = pgTable("comments", {
   userId: integer("user_id").references(() => users.id),
   postId: integer("post_id").references(() => posts.id),
   content: varchar("content").notNull(),
+  media: json("media").$type<Media[]>(),
   createdAt: date("created_at").defaultNow().notNull(),
   updatedAt: date("updated_at")
     .defaultNow()
