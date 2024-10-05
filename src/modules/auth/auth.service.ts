@@ -4,6 +4,7 @@ import { signJwt, verifyPassword } from "../../utils/security";
 import {
   createUser,
   findUserByEmail,
+  findUserById,
   findUserByUsername,
 } from "../user/user.service";
 import crypto from "crypto";
@@ -20,11 +21,19 @@ interface GithubUserResponse {
   id: string;
 }
 
-export const handleGithubRedirect = async (code: string) => {
-  console.log("Starting GitHub OAuth flow with code:", code);
+export const getCurrentUser = async (userId: number) => {
+  return await findUserById(userId);
+};  
 
-  // Exchange code for access token
-  console.log("Exchanging code for access token...");
+export const getGithubOAuthUrl = () => {
+  const scopes = ["user:email", "read:user"];
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${config.GITHUB_CLIENT_ID}&scope=${scopes.join(
+    " "
+  )}`;
+  return githubAuthUrl;
+};
+
+export const handleGithubRedirect = async (code: string) => {
   const tokenResponse = await axios.post<GithubTokenResponse>(
     "https://github.com/login/oauth/access_token",
     {
@@ -36,12 +45,8 @@ export const handleGithubRedirect = async (code: string) => {
       headers: { Accept: "application/json" },
     }
   );
-  console.log("Token response:", tokenResponse.data);
   const accessToken = tokenResponse.data.access_token;
-  console.log("Access token received:", accessToken);
 
-  // Get user info from GitHub
-  console.log("Fetching user info from GitHub...");
   const userResponse = await axios.get<GithubUserResponse>(
     "https://api.github.com/user",
     {
@@ -50,30 +55,20 @@ export const handleGithubRedirect = async (code: string) => {
   );
 
   const { email, login: username, name } = userResponse.data;
-  console.log("User info retrieved:", { email, username, name });
 
-  // Check if user exists in our database
-  console.log("Checking if user exists in the database...");
   let user = await findUserByUsername(username);
 
   if (!user) {
-    console.log("User not found, creating a new user...");
     const password = crypto.randomBytes(16).toString("hex");
-    // Create new user if not exists
     user = await createUser({
       email,
       username,
       name,
-      password: password, // GitHub users don't have a password in our system
+      password: password,
       githubId: userResponse.data.id,
     });
-    console.log("New user created:", user);
-  } else {
-    console.log("User found in the database:", user);
   }
 
-  // Sign JWT
-  console.log("Signing JWT for user...");
   const token = await signJwt(
     {
       id: user.id,
@@ -83,7 +78,6 @@ export const handleGithubRedirect = async (code: string) => {
     { expiresIn: "7d" }
   );
 
-  console.log("JWT signed successfully.");
   return { token, user };
 };
 
