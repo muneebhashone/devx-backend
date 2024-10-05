@@ -1,17 +1,9 @@
 import { FastifyInstance } from "fastify";
-import config from "../../core/config";
-import { handleGithubRedirect } from "./auth.service";
-
-const GITHUB_CLIENT_ID = config.GITHUB_CLIENT_ID;
+import { getGithubOAuthUrl, handleGithubRedirect } from "./auth.service";
 
 const authRouter = async (fastify: FastifyInstance, _: { prefix: string }, done: () => void ) => {
-
-
   fastify.get(`/github`, async (_, reply) => {
-    const scopes = ["user:email", "read:user"];
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=${scopes.join(
-      " "
-    )}`;
+    const githubAuthUrl = getGithubOAuthUrl();
     return reply.redirect(githubAuthUrl);
   });
 
