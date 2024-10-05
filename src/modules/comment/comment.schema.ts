@@ -1,7 +1,8 @@
 import { InferSelectModel } from "drizzle-orm";
 import { builder } from "../../builder";
-import { comments, Media as MediaType } from "../../models/drizzle/schema";
+import { comments } from "../../models/drizzle/schema";
 import { Media, MediaInput } from "../common/common.schema";
+import { IMedia } from "../../types";
 
 export interface IComment extends InferSelectModel<typeof comments> {}
 
@@ -14,7 +15,7 @@ export const Comment = builder.objectRef<IComment>("Comment").implement({
     media: t.field({
       type: t.listRef(Media),
       nullable: true,
-      resolve: (comment) => comment.media as MediaType[] | null,
+      resolve: (comment) => comment.media as IMedia[] | null,
     }),
     createdAt: t.exposeString("createdAt"),
     updatedAt: t.exposeString("updatedAt"),

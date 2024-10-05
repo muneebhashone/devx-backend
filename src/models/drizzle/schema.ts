@@ -9,9 +9,10 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { pgEnum } from "drizzle-orm/pg-core";
-import { MediaType, notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
 import { InferSelectModel, relations } from "drizzle-orm";
+import { pgEnum } from "drizzle-orm/pg-core";
+import { notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
+import { IMedia } from "../../types";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
 export const statusPgEnum = pgEnum("USER_STATUS", statusEnums);
@@ -63,17 +64,12 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   events: many(eventMembers),
 }));
 
-export type Media = {
-  url: string;
-  type: MediaType;
-};
-
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   title: varchar("title").notNull(),
   content: varchar("content").notNull(),
-  media: json("media").$type<Media[]>(),
+  media: json("media").$type<IMedia[]>(),
   likeCount: integer("like_count").default(0),
   groupId: integer("group_id").references(() => groups.id),
   createdAt: date("created_at").defaultNow().notNull(),
@@ -133,7 +129,7 @@ export const comments = pgTable("comments", {
   userId: integer("user_id").references(() => users.id),
   postId: integer("post_id").references(() => posts.id),
   content: varchar("content").notNull(),
-  media: json("media").$type<Media[]>(),
+  media: json("media").$type<IMedia[]>(),
   createdAt: date("created_at").defaultNow().notNull(),
   updatedAt: date("updated_at")
     .defaultNow()
