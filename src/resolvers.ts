@@ -9,3 +9,6 @@ import "./modules/comment/comment.queries";
 
 import "./modules/like/like.mutations";
 import "./modules/like/like.queries";
+
+import "./modules/post/post.mutations";
+import "./modules/post/post.queries";

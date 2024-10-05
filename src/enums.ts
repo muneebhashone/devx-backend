@@ -30,7 +30,6 @@ export const rolesEnums = [
 export const mediaTypeEnums = ["IMAGE", "VIDEO", "LINK"] as const;
 
 export const statusEnums = ["REJECTED", "APPROVED", "REQUESTED"] as const;
-export const mediaTypeEnums = ["IMAGE", "VIDEO", "LINK"] as const;
 
 export type RoleType = (typeof rolesEnums)[number];
 export type StatusType = (typeof statusEnums)[number];

@@ -48,9 +48,9 @@ export const fetchPost = async (id: number): Promise<IPost> => {
   return post;
 };
 
-export const fetchPosts = async (): Promise<IPost[]> => {
-  return db.query.posts.findMany();
-};
+// export const fetchPosts = async (): Promise<IPost[]> => {
+//   return db.query.posts.findMany();
+// };
 
 export const fetchUserPosts = async (userId: number): Promise<IPost[]> => {
   return db.query.posts.findMany({
