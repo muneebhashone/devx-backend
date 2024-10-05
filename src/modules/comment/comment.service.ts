@@ -1,7 +1,8 @@
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../../lib/drizzle";
-import { comments, Media, posts } from "../../models/drizzle/schema";
+import { comments, posts } from "../../models/drizzle/schema";
 import { IComment, ICreateCommentInput, IUpdateCommentInput } from "./comment.schema";
+import { IMedia } from "../../types";
 
 export const createComment = async (
   payload: ICreateCommentInput,
@@ -9,7 +10,7 @@ export const createComment = async (
 ): Promise<IComment> => {
   const [newComment] = await db
     .insert(comments)
-    .values({ ...payload, userId, media: payload.media as Media[] })
+    .values({ ...payload, userId, media: payload.media as IMedia[] })
     .returning();
 
   return newComment;
@@ -21,7 +22,7 @@ export const updateComment = async (
 ): Promise<IComment> => {
   const [updatedComment] = await db
     .update(comments)
-    .set({ content: payload.content, media: payload.media as Media[] })
+    .set({ content: payload.content, media: payload.media as IMedia[] })
     .where(and(eq(comments.id, payload.id), eq(comments.userId, userId)))
     .returning();
 
