@@ -27,15 +27,22 @@ export const rolesEnums = [
   "CLIENT_USER",
 ] as const;
 
+export const mediaTypeEnums = ["IMAGE", "VIDEO", "LINK"] as const;
+
 export const statusEnums = ["REJECTED", "APPROVED", "REQUESTED"] as const;
 
 export type RoleType = (typeof rolesEnums)[number];
 export type StatusType = (typeof statusEnums)[number];
 export type PermissionsType = (typeof permissionEnums)[number];
 export type NotificationType = (typeof notificationTypeEnums)[number];
+export type MediaType = (typeof mediaTypeEnums)[number];
 
 export const StatusGraphQLEnum = builder.enumType("Status", {
   values: statusEnums,
+});
+
+export const MediaTypeGraphQLEnum = builder.enumType("MediaType", {
+  values: mediaTypeEnums,
 });
 
 export const NotificationTypeGraphQLEnum = builder.enumType("NotificationType", {
