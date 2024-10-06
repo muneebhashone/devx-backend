@@ -1,7 +1,6 @@
 import { InferSelectModel } from "drizzle-orm";
 import { builder } from "../../builder";
 import { follows } from "../../models/drizzle/schema";
-import { IUser, User } from "../user/user.schema";
 
 export interface IFollow extends InferSelectModel<typeof follows> {}
 

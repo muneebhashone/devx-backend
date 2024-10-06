@@ -10,9 +10,9 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { InferSelectModel, relations, sql } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
-import { groupRolesEnums, notificationTypeEnums, rolesEnums, statusEnums, connectionStatusEnums } from "../../enums";
+import { connectionStatusEnums, groupRolesEnums, notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
 import { IMedia } from "../../types";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
