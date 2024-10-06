@@ -303,7 +303,7 @@ export const groups = pgTable("groups", {
   isPublic: boolean("is_public").default(false),
   cover: varchar("cover"),
   avatar: varchar("avatar"),
-  createdAt: date("created_at").defaultNow().notNull(),
+  createdAt: date("created_at").defaultNow(),
   updatedAt: date("updated_at")
     .defaultNow()
     .$onUpdate(() => new Date().toISOString()),
