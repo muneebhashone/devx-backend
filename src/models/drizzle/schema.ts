@@ -11,10 +11,11 @@ import {
 
 import { InferSelectModel, relations } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
-import { notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
+import { groupRolesEnums, notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
 import { IMedia } from "../../types";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
+export const groupRolePgEnum = pgEnum("GROUP_ROLE", groupRolesEnums);
 export const statusPgEnum = pgEnum("USER_STATUS", statusEnums);
 export const pgNotificationTypeEnum = pgEnum(
   "NOTIFICATION_TYPE",
@@ -310,6 +311,7 @@ export const groups = pgTable("groups", {
 
 export const groupMembers = pgTable("group_members", {
   id: serial("id").primaryKey(),
+  role: groupRolePgEnum("role").notNull(),
   groupId: integer("group_id").references(() => groups.id),
   userId: integer("user_id").references(() => users.id),
   createdAt: date("created_at").defaultNow().notNull(),
