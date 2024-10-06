@@ -1,5 +1,7 @@
 # DevX
 
+![DevX Logo](./LOGO.svg)
+
 DevX is an open-source professional social platform designed specifically for software engineers and developers. Connect, collaborate, and grow your career within our thriving community.
 
 ## 🚀 Features
