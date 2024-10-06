@@ -15,3 +15,9 @@ import "./modules/post/post.queries";
 
 import "./modules/group/group.mutations";
 import "./modules/group/group.queries";
+
+import "./modules/follow/follow.mutations";
+import "./modules/follow/follow.queries";
+
+import "./modules/connection/connection.mutations";
+import "./modules/connection/connection.queries";
