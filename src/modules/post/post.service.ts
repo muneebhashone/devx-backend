@@ -36,16 +36,21 @@ export const deletePost = async (id: number, userId: number): Promise<boolean> =
   return result.length > 0;
 };
 
-export const fetchPost = async (id: number): Promise<IPost> => {
+export const deletePostById = async (id: number): Promise<boolean> => {
+  const result = await db
+    .delete(posts)
+    .where(eq(posts.id, id))
+    .returning({ deletedId: posts.id });
+  
+  return result.length > 0;
+};
+
+export const fetchPost = async (id: number): Promise<IPost | null> => {
   const post = await db.query.posts.findFirst({
     where: eq(posts.id, id),
   });
 
-  if (!post) {
-    throw new Error("Post not found");
-  }
-
-  return post;
+  return post ?? null;
 };
 
 // export const fetchPosts = async (): Promise<IPost[]> => {
