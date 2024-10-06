@@ -12,3 +12,6 @@ import "./modules/like/like.queries";
 
 import "./modules/post/post.mutations";
 import "./modules/post/post.queries";
+
+import "./modules/group/group.mutations";
+import "./modules/group/group.queries";
