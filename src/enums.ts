@@ -19,19 +19,17 @@ export const notificationTypeEnums = [
 ] as const;
 
 export const rolesEnums = [
-  "SUPER_ADMIN",
-  "SUB_ADMIN",
-  "WHITE_LABEL_ADMIN",
-  "WHITE_LABEL_SUB_ADMIN",
-  "CLIENT_SUPER_USER",
-  "CLIENT_USER",
+ "ADMIN", "DEFAULT"
 ] as const;
+
+export const groupRolesEnums = ["ADMIN", "MODERATOR", "MEMBER"] as const; 
 
 export const mediaTypeEnums = ["IMAGE", "VIDEO", "LINK"] as const;
 
 export const statusEnums = ["REJECTED", "APPROVED", "REQUESTED"] as const;
 
 export type RoleType = (typeof rolesEnums)[number];
+export type GroupRoleType = (typeof groupRolesEnums)[number];
 export type StatusType = (typeof statusEnums)[number];
 export type PermissionsType = (typeof permissionEnums)[number];
 export type NotificationType = (typeof notificationTypeEnums)[number];
@@ -43,6 +41,10 @@ export const StatusGraphQLEnum = builder.enumType("Status", {
 
 export const MediaTypeGraphQLEnum = builder.enumType("MediaType", {
   values: mediaTypeEnums,
+});
+
+export const GroupRoleTypeGraphQLEnum = builder.enumType("GroupRoleType", {
+  values: groupRolesEnums,
 });
 
 export const NotificationTypeGraphQLEnum = builder.enumType("NotificationType", {
