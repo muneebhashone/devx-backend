@@ -41,6 +41,7 @@
     "@react-email/components": "0.0.22",
     "argon2": "^0.40.3",
     "axios": "^1.7.7",
+    "bullmq": "^5.16.0",
     "drizzle-orm": "^0.32.2",
     "fastify": "^4.28.1",
     "graphql": "^16.9.0",

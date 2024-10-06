@@ -6,7 +6,7 @@ import registerRoutes from "./routes";
 const start = async () => {
   try {
     await pingRedis();
-
+    
     registerRoutes(app);
 
     await app.listen({ port: config.PORT });
