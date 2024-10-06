@@ -21,3 +21,6 @@ import "./modules/follow/follow.queries";
 
 import "./modules/connection/connection.mutations";
 import "./modules/connection/connection.queries";
+
+import "./modules/feed/feed.queries";
+
