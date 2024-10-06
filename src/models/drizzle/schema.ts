@@ -261,11 +261,10 @@ export const userFeed = pgTable("user_feed", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   posts: json("posts").$type<InferSelectModel<typeof posts>[]>(),
-  createdAt: date("created_at").defaultNow().notNull(),
-  updatedAt: date("updated_at")
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
     .defaultNow()
-    .$onUpdate(() => new Date().toISOString()),
-  expiresAt: date("expires_at").notNull(),
+    .$onUpdate(() => new Date()),
 });
 
 export const userFeedRelations = relations(userFeed, ({ one }) => ({
