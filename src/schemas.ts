@@ -5,3 +5,5 @@ import "./modules/like/like.schema";
 import "./modules/common/common.schema";
 import "./modules/post/post.schema";
 import "./modules/group/group.schema";
+import "./modules/follow/follow.schema";
+import "./modules/connection/connection.schema";

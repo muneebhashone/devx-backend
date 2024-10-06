@@ -35,6 +35,10 @@ export type PermissionsType = (typeof permissionEnums)[number];
 export type NotificationType = (typeof notificationTypeEnums)[number];
 export type MediaType = (typeof mediaTypeEnums)[number];
 
+export const connectionStatusEnums = ["PENDING", "ACCEPTED", "REJECTED"] as const;
+
+export type ConnectionStatusType = (typeof connectionStatusEnums)[number];
+
 export const StatusGraphQLEnum = builder.enumType("Status", {
   values: statusEnums,
 });
@@ -49,4 +53,8 @@ export const GroupRoleTypeGraphQLEnum = builder.enumType("GroupRoleType", {
 
 export const NotificationTypeGraphQLEnum = builder.enumType("NotificationType", {
   values: notificationTypeEnums,
+});
+
+export const ConnectionStatusGraphQLEnum = builder.enumType("ConnectionStatus", {
+  values: connectionStatusEnums,
 });

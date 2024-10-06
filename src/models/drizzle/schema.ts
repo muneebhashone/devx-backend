@@ -5,13 +5,14 @@ import {
   json,
   pgTable,
   serial,
+  timestamp,
   unique,
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { InferSelectModel, relations } from "drizzle-orm";
+import { InferSelectModel, relations, sql } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
-import { groupRolesEnums, notificationTypeEnums, rolesEnums, statusEnums } from "../../enums";
+import { groupRolesEnums, notificationTypeEnums, rolesEnums, statusEnums, connectionStatusEnums } from "../../enums";
 import { IMedia } from "../../types";
 
 export const rolePgEnum = pgEnum("ROLE", rolesEnums);
@@ -21,6 +22,7 @@ export const pgNotificationTypeEnum = pgEnum(
   "NOTIFICATION_TYPE",
   notificationTypeEnums
 );
+export const connectionStatusPgEnum = pgEnum("CONNECTION_STATUS", connectionStatusEnums);
 
 export type ResetToken = {
   token: string;
@@ -63,6 +65,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   }),
   group: many(groupMembers),
   events: many(eventMembers),
+  connections: many(connections),
 }));
 
 export const posts = pgTable("posts", {
@@ -224,30 +227,6 @@ export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
   }),
 }));
 
-export const follows = pgTable(
-  "follows",
-  {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id),
-    followingId: integer("following_id").references(() => users.id),
-    createdAt: date("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    unique: unique().on(table.userId, table.followingId),
-  })
-);
-
-export const followsRelations = relations(follows, ({ one }) => ({
-  user: one(users, {
-    fields: [follows.userId],
-    references: [users.id],
-  }),
-  following: one(users, {
-    fields: [follows.followingId],
-    references: [users.id],
-  }),
-}));
-
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -383,7 +362,45 @@ export const groupPostsRelations = relations(groupPosts, ({ one }) => ({
     fields: [groupPosts.postId],
     references: [posts.id],
   }),
-}));  
+}));
 
+export const connections = pgTable("connections", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  connectedUserId: integer("connected_user_id").notNull().references(() => users.id),
+  status: connectionStatusPgEnum("status").notNull().default("PENDING"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
+export const follows = pgTable("follows", {
+  id: serial("id").primaryKey(),
+  followerId: integer("follower_id").notNull().references(() => users.id),
+  followedId: integer("followed_id").notNull().references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+},   
+(table) => ({
+  unique: unique().on(table.followerId, table.followedId),
+}));
 
+export const connectionsRelations = relations(connections, ({ one }) => ({
+  user: one(users, {
+    fields: [connections.userId],
+    references: [users.id],
+  }),
+  connectedUser: one(users, {
+    fields: [connections.connectedUserId],
+    references: [users.id],
+  }),
+}));
+
+export const followsRelations = relations(follows, ({ one }) => ({
+  follower: one(users, {
+    fields: [follows.followerId],
+    references: [users.id],
+  }),
+  followed: one(users, {
+    fields: [follows.followedId],
+    references: [users.id],
+  }),
+}));
