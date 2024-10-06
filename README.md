@@ -30,7 +30,7 @@ DevX is an open-source professional social platform designed specifically for so
 1. Clone the repository:
    ```
    git clone https://github.com/muneebhashone/devx-backend.git
-   cd devx
+   cd devx-backend
    ```
 
 2. Install dependencies:
