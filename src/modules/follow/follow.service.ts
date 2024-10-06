@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../../lib/drizzle";
-import { follows, users } from "../../models/drizzle/schema";
-import { IFollow, ICreateFollowInput, IFollowWithUser } from "./follow.schema";
+import { follows } from "../../models/drizzle/schema";
+import { ICreateFollowInput, IFollow, IFollowWithUser } from "./follow.schema";
 
 export const createFollow = async (input: ICreateFollowInput, followerId: number): Promise<IFollow> => {
   if (input.followedId === followerId) {
